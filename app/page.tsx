@@ -146,7 +146,7 @@ export default function Home() {
                 alt="Huruf Logo"
               />
             </div>
-            <span className="font-bold text-xl tracking-tight">EnvHub</span>
+            <span className="font-bold text-xl tracking-tight">Huruf Envs</span>
           </div>
 
           <div className="flex-1 overflow-y-auto pt-4 px-2">

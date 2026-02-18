@@ -189,7 +189,7 @@ export default function EnvEditor({ initialData, onSave, onCancel }: EnvEditorPr
                             value={environment}
                             onChange={e => setEnvironment(e.target.value)}
                             disabled={isEditing}
-                            placeholder="dev"
+                            placeholder="development"
                             required
                         />
                     </div>
