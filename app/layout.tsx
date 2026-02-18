@@ -7,7 +7,7 @@ import { ToastProvider } from './components/ToastContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'EnvHub Platform',
+  title: 'Huruf Environments',
   description: 'Secure Environment Variable Management',
 };
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { ChevronRight, ChevronDown, Folder, Server, RefreshCw, Lock, LogOut, Plus, Download, Terminal, Copy } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { Lock, LogOut, Plus, Terminal, Copy } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 import Explorer from "./components/Explorer";
 import EnvViewer from "./components/EnvViewer";
@@ -11,6 +11,8 @@ import HistoryTable from "./components/HistoryTable";
 import LoginScreen from "./components/LoginScreen"; // [NEW]
 import { fetchEnv, fetchHistory, pushEnv } from "@/lib/api-client";
 import { useToast } from "./components/ToastContext";
+
+import HurufLogo from "./huruf-logo.png";
 
 interface EnvData {
   project: string;
@@ -30,7 +32,11 @@ interface HistoryItem {
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [selected, setSelected] = useState<{ p: string, s: string, e: string } | null>(null);
+  const [selected, setSelected] = useState<{
+    p: string;
+    s: string;
+    e: string;
+  } | null>(null);
   const [data, setData] = useState<EnvData | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [version, setVersion] = useState<number | undefined>(undefined);
@@ -52,9 +58,12 @@ export default function Home() {
 
     fetchEnv(selected.p, selected.s, selected.e, version)
       .then(setData)
-      .catch(err => {
+      .catch((err) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((err as any).message?.includes("401") || (err as any).message?.includes("Unauthorized")) {
+        if (
+          (err as any).message?.includes("401") ||
+          (err as any).message?.includes("Unauthorized")
+        ) {
           showToast("Session Expired. Please login again.", "error");
         } else {
           showToast("Failed to load: " + (err as Error).message, "error");
@@ -62,8 +71,8 @@ export default function Home() {
       });
 
     fetchHistory(selected.p, selected.s, selected.e)
-      .then(res => setHistory(res ? res.history : []))
-      .catch(err => console.error(err));
+      .then((res) => setHistory(res ? res.history : []))
+      .catch((err) => console.error(err));
   }, [selected, version, showToast]);
 
   useEffect(() => {
@@ -91,15 +100,26 @@ export default function Home() {
       showToast("Saved successfully!", "success");
       setIsEditing(false);
       setIsCreating(false);
-      setSelected({ p: formData.project, s: formData.service, e: formData.environment });
+      setSelected({
+        p: formData.project,
+        s: formData.service,
+        e: formData.environment,
+      });
       setVersion(undefined);
     } catch (e: unknown) {
-      showToast("Failed to save: " + (e instanceof Error ? e.message : String(e)), "error");
+      showToast(
+        "Failed to save: " + (e instanceof Error ? e.message : String(e)),
+        "error",
+      );
     }
   };
 
   if (status === "loading") {
-    return <div className="flex h-screen items-center justify-center bg-black text-white">Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-black text-white">
+        Loading...
+      </div>
+    );
   }
 
   if (!session) {
@@ -119,8 +139,12 @@ export default function Home() {
         {/* Sidebar */}
         <div className="flex flex-col border-r border-white/10 bg-black/20 backdrop-blur-xl w-72 flex-shrink-0 transition-all duration-300">
           <div className="flex items-center p-6 border-b border-white/10">
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-2 rounded-lg shadow-lg mr-3">
-              <Lock className="text-white" size={20} />
+            <div className="bg-white p-2 rounded-lg shadow-lg mr-3">
+              <img
+                className="w-12 h-12 relative z-10"
+                src={HurufLogo.src}
+                alt="Huruf Logo"
+              />
             </div>
             <span className="font-bold text-xl tracking-tight">EnvHub</span>
           </div>
@@ -134,7 +158,9 @@ export default function Home() {
             <div className="px-3 py-2">
               <div className="bg-black/30 rounded-lg p-3 border border-white/10">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Install CLI</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Install CLI
+                  </span>
                   <Terminal size={12} className="text-blue-400" />
                 </div>
                 <div
@@ -142,8 +168,11 @@ export default function Home() {
                   onClick={async () => {
                     try {
                       // Fetch the latest version dynamically with cache busting
-                      const response = await fetch(`/cli/latest_version.txt?t=${Date.now()}`);
-                      if (!response.ok) throw new Error('Failed to fetch version');
+                      const response = await fetch(
+                        `/cli/latest_version.txt?t=${Date.now()}`,
+                      );
+                      if (!response.ok)
+                        throw new Error("Failed to fetch version");
                       const version = (await response.text()).trim();
 
                       const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-${version}-py3-none-any.whl`;
@@ -153,7 +182,9 @@ export default function Home() {
                       alert(`Command copied! Installing version ${version}`);
                     } catch (e) {
                       console.error("CLI Version Fetch Error:", e);
-                      alert("Failed to get latest version. Please try again or check the console.");
+                      alert(
+                        "Failed to get latest version. Please try again or check the console.",
+                      );
                     }
                   }}
                 >
@@ -164,7 +195,9 @@ export default function Home() {
                     <Copy size={12} />
                   </div>
                 </div>
-                <p className="text-[10px] text-gray-600 mt-1 text-center">Click to copy command</p>
+                <p className="text-[10px] text-gray-600 mt-1 text-center">
+                  Click to copy command
+                </p>
               </div>
             </div>
 
@@ -174,10 +207,14 @@ export default function Home() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate font-mono text-blue-400">
-                  {session?.user?.username ? `@${session.user.username}` : (session?.user?.name || "User")}
+                  {session?.user?.username
+                    ? `@${session.user.username}`
+                    : session?.user?.name || "User"}
                 </p>
                 {session?.user?.username && session?.user?.name && (
-                  <p className="text-xs text-gray-400 truncate">{session.user.name}</p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {session.user.name}
+                  </p>
                 )}
               </div>
             </div>
@@ -198,16 +235,22 @@ export default function Home() {
             <div className="text-sm text-gray-400">
               {selected ? (
                 <span className="flex items-center space-x-2 text-lg">
-                  <span className="text-gray-500 font-medium">{selected.p}</span>
+                  <span className="text-gray-500 font-medium">
+                    {selected.p}
+                  </span>
                   <span className="text-gray-600">/</span>
-                  <span className="text-gray-300 font-medium">{selected.s}</span>
+                  <span className="text-gray-300 font-medium">
+                    {selected.s}
+                  </span>
                   <span className="text-gray-600">/</span>
                   <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
                     {selected.e}
                   </span>
                 </span>
               ) : (
-                <span className="text-lg font-medium text-gray-500">Dashboard</span>
+                <span className="text-lg font-medium text-gray-500">
+                  Dashboard
+                </span>
               )}
             </div>
 
@@ -223,7 +266,10 @@ export default function Home() {
           <div className="p-8">
             {isCreating ? (
               <div className="max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-200">
-                <EnvEditor onSave={handleSave} onCancel={() => setIsCreating(false)} />
+                <EnvEditor
+                  onSave={handleSave}
+                  onCancel={() => setIsCreating(false)}
+                />
               </div>
             ) : isEditing && data ? (
               <div className="max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-200">
@@ -236,7 +282,11 @@ export default function Home() {
             ) : selected ? (
               <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
                 <EnvViewer data={data} onEdit={() => setIsEditing(true)} />
-                <HistoryTable history={history} onSelectVersion={setVersion} currentVersion={data?.version} />
+                <HistoryTable
+                  history={history}
+                  onSelectVersion={setVersion}
+                  currentVersion={data?.version}
+                />
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-8 animate-in fade-in duration-500">
@@ -248,7 +298,8 @@ export default function Home() {
                     Select an Environment
                   </h2>
                   <p className="text-lg text-gray-500 max-w-md mx-auto">
-                    Browse your projects on the left or create a new one to get started.
+                    Browse your projects on the left or create a new one to get
+                    started.
                   </p>
                 </div>
               </div>
@@ -256,6 +307,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main >
+    </main>
   );
 }
