@@ -139,9 +139,9 @@ export default function Home() {
         {/* Sidebar */}
         <div className="flex flex-col border-r border-white/10 bg-black/20 backdrop-blur-xl w-72 flex-shrink-0 transition-all duration-300">
           <div className="flex items-center p-6 border-b border-white/10">
-            <div className="bg-white p-2 rounded-lg shadow-lg mr-3">
+            <div className="bg-white rounded-lg shadow-lg mr-3">
               <img
-                className="w-12 h-12 relative z-10"
+                className="w-10 h-10 relative z-10"
                 src={HurufLogo.src}
                 alt="Huruf Logo"
               />
